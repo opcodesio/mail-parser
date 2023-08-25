@@ -296,3 +296,40 @@ EOF;
 EOF)
         ->and($message->getPArts()[1]->getContent())->toBe('This is a test string');
 });
+
+it('still parses with a broken boundary', function () {
+    $messageString = <<<EOF
+From: sender@example.com
+To: recipient@example.com
+Subject: This is an email with common headers
+Date: Thu, 24 Aug 2023 21:15:01 PST
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary¨cQXEYh
+
+--a8cQXEYh
+Content-Type: text/html; charset="utf-8"
+
+<html>
+<head>
+<title>This is an HTML email</title>
+</head>
+<body>
+<h1>This is the HTML version of the email</h1>
+</body>
+</html>--a8cQXEYh
+Content-Type: text/plain; name=test.txt
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; name=test.txt;
+ filename="test.txt"; name="test.txt"
+
+
+--a8cQXEYh--
+EOF;
+    $messageString = str_replace("\n", "\r\n", $messageString);
+
+    $message = Message::fromString($messageString);
+
+    expect($message->getParts())->toHaveCount(2)
+        ->and($message->getParts()[1]->isAttachment())->toBe(true)
+        ->and($message->getParts()[1]->getContent())->toBeEmpty();
+});

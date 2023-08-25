@@ -224,7 +224,7 @@ class Message implements \JsonSerializable
             }
 
             if (preg_match('/^(?<key>[A-Za-z\-0-9]+): (?<value>.*)$/', $line, $matches)) {
-                if (strtolower($matches['key']) === 'content-type' && !isset($this->boundary)) {
+                if (strtolower($matches['key']) === 'content-type' && !isset($this->boundary) && !str_contains($matches['value'], 'multipart/mixed')) {
                     // this might be a single-part message. Let's start collecting the body.
                     $collectingBody = true;
                     $currentBody = '';
@@ -246,6 +246,14 @@ class Message implements \JsonSerializable
                     $headerInProgress = $matches['key'];
                 }
 
+                continue;
+            }
+
+            if (preg_match("~^--(?<boundary>[0-9A-Za-z'()+_,-./:=?]{0,68}[0-9A-Za-z'()+_,-./=?])~", $line, $matches)) {
+                $this->boundary = trim($matches['boundary']);
+                $collectingBody = true;
+                $currentBody = '';
+                $currentBodyHeaders = [];
                 continue;
             }
 
