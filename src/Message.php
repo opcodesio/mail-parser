@@ -87,6 +87,36 @@ class Message
         return $this->parts;
     }
 
+    public function getHtmlPart(): ?MessagePart
+    {
+        foreach ($this->parts as $part) {
+            if ($part->isHtml()) {
+                return $part;
+            }
+        }
+
+        return null;
+    }
+
+    public function getTextPart(): ?MessagePart
+    {
+        foreach ($this->parts as $part) {
+            if ($part->isText()) {
+                return $part;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @return MessagePart[]
+     */
+    public function getAttachments(): array
+    {
+        return array_filter($this->parts, fn ($part) => $part->isAttachment());
+    }
+
     protected function parse()
     {
         // Parse the email message into headers and body

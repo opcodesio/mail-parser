@@ -138,6 +138,11 @@ EOF;
 
     expect($parts)->toHaveCount(2);
 
+    $htmlPart = $parts[0];
+
+    expect($htmlPart->getContentType())->toBe('text/html; charset="utf-8"')
+        ->and($htmlPart->isHtml())->toBe(true);
+
     $attachmentPart = $parts[1];
 
     expect($attachmentPart->getContent())->toBe('This is a test string')

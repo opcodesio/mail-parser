@@ -38,6 +38,21 @@ class MessagePart
         return $this->content;
     }
 
+    public function isHtml(): bool
+    {
+        return str_starts_with(strtolower($this->getContentType()), 'text/html');
+    }
+
+    public function isText(): bool
+    {
+        return str_starts_with(strtolower($this->getContentType()), 'text/plain');
+    }
+
+    public function isImage(): bool
+    {
+        return str_starts_with(strtolower($this->getContentType()), 'image/');
+    }
+
     public function isAttachment(): bool
     {
         return str_starts_with($this->getHeader('Content-Disposition'), 'attachment');
