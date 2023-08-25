@@ -1,0 +1,46 @@
+{
+    "name": "opcodesio/mail-parser",
+    "description": "Parse emails without the mailparse extension",
+    "keywords": [
+        "arukompas",
+        "opcodesio",
+        "php",
+        "mail",
+        "email",
+        "email parser"
+    ],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Arunas Skirius",
+            "email": "arukomp@gmail.com",
+            "role": "Developer"
+        }
+    ],
+    "scripts": {
+        "test": "vendor/bin/pest"
+    },
+    "autoload": {
+        "psr-4": {
+            "Opcodes\\MailParser\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Opcodes\\MailParser\\Tests\\": "tests"
+        }
+    },
+    "require": {
+        "php": "^8.0"
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    },
+    "require-dev": {
+        "pestphp/pest": "^2.16",
+        "symfony/var-dumper": "^6.3"
+    }
+}
