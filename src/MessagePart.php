@@ -55,7 +55,7 @@ class MessagePart
 
     public function isAttachment(): bool
     {
-        return str_starts_with($this->getHeader('Content-Disposition'), 'attachment');
+        return str_starts_with($this->getHeader('Content-Disposition', ''), 'attachment');
     }
 
     public function getFilename(): string
@@ -69,5 +69,14 @@ class MessagePart
         }
 
         return '';
+    }
+
+    public function toArray(): array
+    {
+        return [
+            'headers' => $this->getHeaders(),
+            'content' => $this->getContent(),
+            'filename' => $this->getFilename(),
+        ];
     }
 }

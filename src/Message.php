@@ -2,7 +2,7 @@
 
 namespace Opcodes\MailParser;
 
-class Message
+class Message implements \JsonSerializable
 {
     protected string $message;
 
@@ -130,13 +130,13 @@ class Message
 
         foreach ($lines as $line) {
             if ($headerInProgress) {
-                $this->headers[$headerInProgress] .= "\n" . $line;
+                $this->headers[$headerInProgress] .= "\n" . rtrim($line);
                 $headerInProgress = str_ends_with($line, ';');
                 continue;
             }
 
             if ($currentBodyHeaderInProgress) {
-                $currentBodyHeaders[$currentBodyHeaderInProgress] .= "\n" . $line;
+                $currentBodyHeaders[$currentBodyHeaderInProgress] .= "\n" . rtrim($line);
                 $currentBodyHeaderInProgress = str_ends_with($line, ';');
                 continue;
             }
@@ -160,10 +160,10 @@ class Message
             }
 
             if ($collectingBody && preg_match('/^(?<key>[A-Za-z\-0-9]+): (?<value>.*)$/', $line, $matches)) {
-                $currentBodyHeaders[$matches['key']] = $matches['value'];
+                $currentBodyHeaders[$matches['key']] = rtrim($matches['value']);
 
                 // if the last character is a semicolon, then the header is continued on the next line
-                if (str_ends_with($matches['value'], ';')) {
+                if (str_ends_with($currentBodyHeaders[$matches['key']], ';')) {
                     $currentBodyHeaderInProgress = $matches['key'];
                 }
 
@@ -171,7 +171,7 @@ class Message
             }
 
             if ($collectingBody) {
-                $currentBody .= $line."\n";
+                $currentBody .= rtrim($line)."\n";
                 continue;
             }
 
@@ -182,11 +182,11 @@ class Message
             }
 
             if (preg_match('/^(?<key>[A-Za-z\-0-9]+): (?<value>.*)$/', $line, $matches)) {
-                $this->headers[$matches['key']] = $matches['value'];
+                $this->headers[$matches['key']] = rtrim($matches['value']);
 
                 // if the last character is a semicolon, then the header is continued on the next line
-                if (str_ends_with($matches['value'], ';')) {
-                    $headerInProgress = $matches['key'];
+                if (str_ends_with($this->headers[$matches['key']], ';')) {
+                    $headerInProgress = rtrim($matches['key']);
                 }
 
                 continue;
@@ -197,5 +197,24 @@ class Message
     protected function addPart(string $currentBody, array $currentBodyHeaders): void
     {
         $this->parts[] = new MessagePart(trim($currentBody), $currentBodyHeaders);
+    }
+
+    public function toArray(): array
+    {
+        return [
+            'id' => $this->getId(),
+            'subject' => $this->getSubject(),
+            'from' => $this->getFrom(),
+            'to' => $this->getTo(),
+            'reply_to' => $this->getReplyTo(),
+            'date' => $this->getDate() ? $this->getDate()->format('c') : null,
+            'headers' => $this->getHeaders(),
+            'parts' => array_map(fn ($part) => $part->toArray(), $this->getParts()),
+        ];
+    }
+
+    public function jsonSerialize(): mixed
+    {
+        return $this->toArray();
     }
 }

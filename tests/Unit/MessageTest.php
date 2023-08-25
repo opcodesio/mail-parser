@@ -148,4 +148,7 @@ EOF;
     expect($attachmentPart->getContent())->toBe('This is a test string')
         ->and($attachmentPart->isAttachment())->toBe(true)
         ->and($attachmentPart->getFilename())->toBe('test.txt');
+
+    $attachments = $message->getAttachments();
+    expect($attachments)->toHaveCount(1);
 });
