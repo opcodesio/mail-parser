@@ -114,7 +114,7 @@ class Message implements \JsonSerializable
      */
     public function getAttachments(): array
     {
-        return array_filter($this->parts, fn ($part) => $part->isAttachment());
+        return array_values(array_filter($this->parts, fn ($part) => $part->isAttachment()));
     }
 
     public function getSize(): int

@@ -150,7 +150,8 @@ EOF;
         ->and($attachmentPart->getFilename())->toBe('test.txt');
 
     $attachments = $message->getAttachments();
-    expect($attachments)->toHaveCount(1);
+    expect($attachments)->toHaveCount(1)
+        ->and($attachments)->toHaveKey(0);
 });
 
 it('skips initial content that is not part of the message', function () {
