@@ -156,13 +156,13 @@ class Message implements \JsonSerializable
             $line = rtrim($line, "\r\n ");
 
             if ($headerInProgress) {
-                $this->headers[$headerInProgress] .= "\n" . $line;
+                $this->headers[$headerInProgress] .= PHP_EOL . $line;
                 $headerInProgress = str_ends_with($this->headers[$headerInProgress], ';');
                 continue;
             }
 
             if ($currentBodyHeaderInProgress) {
-                $currentBodyHeaders[$currentBodyHeaderInProgress] .= "\n" . $line;
+                $currentBodyHeaders[$currentBodyHeaderInProgress] .= PHP_EOL . $line;
                 $currentBodyHeaderInProgress = str_ends_with($currentBodyHeaders[$currentBodyHeaderInProgress], ';');
                 continue;
             }
@@ -197,7 +197,7 @@ class Message implements \JsonSerializable
             }
 
             if ($collectingBody) {
-                $currentBody .= $line."\n";
+                $currentBody .= $line . PHP_EOL;
                 continue;
             }
 
