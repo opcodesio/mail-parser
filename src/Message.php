@@ -44,7 +44,20 @@ class Message implements \JsonSerializable
 
     public function getHeader(string $header, $default = null): ?string
     {
-        return $this->headers[$header] ?? $default;
+        $header = strtolower($header);
+
+        foreach ($this->headers as $key => $value) {
+            if (strtolower($key) === $header) {
+                return $value;
+            }
+        }
+
+        return $default;
+    }
+
+    public function getContentType(): string
+    {
+        return $this->getHeader('Content-Type', '');
     }
 
     public function getId(): string
@@ -169,7 +182,6 @@ class Message implements \JsonSerializable
 
             if (isset($this->boundary) && $line === '--'.$this->boundary.'--') {
                 // We've reached the end of the message
-                $this->addPart($currentBody, $currentBodyHeaders);
                 break;
             }
 
@@ -208,6 +220,21 @@ class Message implements \JsonSerializable
             }
 
             if (preg_match('/^(?<key>[A-Za-z\-0-9]+): (?<value>.*)$/', $line, $matches)) {
+                if (strtolower($matches['key']) === 'content-type' && !isset($this->boundary)) {
+                    // this might be a single-part message. Let's start collecting the body.
+                    $collectingBody = true;
+                    $currentBody = '';
+                    $currentBodyHeaders = [
+                        $matches['key'] => $matches['value'],
+                    ];
+
+                    if (str_ends_with($currentBodyHeaders[$matches['key']], ';')) {
+                        $currentBodyHeaderInProgress = $matches['key'];
+                    }
+
+                    continue;
+                }
+
                 $this->headers[$matches['key']] = $matches['value'];
 
                 // if the last character is a semicolon, then the header is continued on the next line
@@ -220,6 +247,19 @@ class Message implements \JsonSerializable
 
             // The line is not part of the email message. Let's remove it altogether.
             $this->message = ltrim(substr($this->message, strlen($line)));
+        }
+
+        if (!empty($currentBody) || !empty($currentBodyHeaders)) {
+            $this->addPart($currentBody, $currentBodyHeaders);
+        }
+
+        if (! $this->getContentType() && ($part = $this->getParts()[0] ?? null)) {
+            foreach ($part->getHeaders() as $key => $value) {
+                if (strtolower($key) === 'content-type') {
+                    $this->headers[$key] = $value;
+                    break;
+                }
+            }
         }
     }
 

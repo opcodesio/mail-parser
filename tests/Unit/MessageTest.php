@@ -5,6 +5,64 @@ namespace Opcodes\MailParser\Tests\Unit;
 use Opcodes\MailParser\Message;
 
 it('can parse a simple mail message', function () {
+    $messageString = <<<EOF
+From: Sender <no-reply@example.com>
+To: Receiver <receiver@example.com>
+Subject: Test Subject
+Message-ID: <6e30b164904cf01158c7cc58f144b9ca@example.com>
+MIME-Version: 1.0
+Date: Fri, 25 Aug 2023 15:36:13 +0200
+Content-Type: text/html; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+Email content goes here.
+EOF;
+
+    $message = Message::fromString($messageString);
+
+    expect($message->getFrom())->toBe('Sender <no-reply@example.com>')
+        ->and($message->getTo())->toBe('Receiver <receiver@example.com>')
+        ->and($message->getSubject())->toBe('Test Subject')
+        ->and($message->getId())->toBe('6e30b164904cf01158c7cc58f144b9ca@example.com')
+        ->and($message->getDate()?->format('Y-m-d H:i:s'))->toBe('2023-08-25 15:36:13')
+        ->and($message->getContentType())->toBe('text/html; charset=utf-8')
+        ->and($message->getHtmlPart()?->getContent())->toBe('Email content goes here.')
+        ->and($message->getHtmlPart()?->getHeaders())->toBe([
+            'Content-Type' => 'text/html; charset=utf-8',
+            'Content-Transfer-Encoding' => 'quoted-printable',
+        ]);
+});
+
+it('can parse lowercase headers', function () {
+    $messageString = <<<EOF
+from: Sender <no-reply@example.com>
+to: Receiver <receiver@example.com>
+subject: Test Subject
+message-id: <6e30b164904cf01158c7cc58f144b9ca@example.com>
+mime-version: 1.0
+date: Fri, 25 Aug 2023 15:36:13 +0200
+content-type: text/html; charset=utf-8
+content-transfer-encoding: quoted-printable
+
+Email content goes here.
+EOF;
+
+    $message = Message::fromString($messageString);
+
+    expect($message->getHeaders())->toBe([
+        'from' => 'Sender <no-reply@example.com>',
+        'to' => 'Receiver <receiver@example.com>',
+        'subject' => 'Test Subject',
+        'message-id' => '<6e30b164904cf01158c7cc58f144b9ca@example.com>',
+        'mime-version' => '1.0',
+        'date' => 'Fri, 25 Aug 2023 15:36:13 +0200',
+        'content-type' => 'text/html; charset=utf-8',
+    ])
+        ->and($message->getFrom())->toBe('Sender <no-reply@example.com>')
+        ->and($message->getHeader('Content-Type'))->toBe('text/html; charset=utf-8');
+});
+
+it('can parse a mail message with boundaries', function () {
     date_default_timezone_set('UTC');
     $messageString = <<<EOF
 From: sender@example.com
@@ -177,7 +235,7 @@ Content-Type: text/html; charset="utf-8"
 </body>
 </html>
 
-------=_Part_1_1234567890-- 
+------=_Part_1_1234567890--
 EOF;
 
     $message = Message::fromString($messageString);
