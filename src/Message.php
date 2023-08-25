@@ -180,15 +180,19 @@ class Message implements \JsonSerializable
                 continue;
             }
 
-            if (isset($this->boundary) && $line === '--'.$this->boundary.'--') {
+            if (isset($this->boundary) && str_ends_with($line, '--'.$this->boundary.'--')) {
+                $line = str_replace('--'.$this->boundary.'--', '', $line);
+                $currentBody .= $line;
                 // We've reached the end of the message
                 break;
             }
 
-            if (isset($this->boundary) && $line === '--'.$this->boundary) {
+            if (isset($this->boundary) && str_ends_with($line, '--'.$this->boundary)) {
+                $line = str_replace('--'.$this->boundary, '', $line);
+
                 if ($collectingBody) {
                     // We've reached the end of a part, add it and reset the variables
-                    $this->addPart($currentBody, $currentBodyHeaders);
+                    $this->addPart($currentBody . $line, $currentBodyHeaders);
                 }
 
                 $collectingBody = true;

@@ -252,3 +252,47 @@ EOF;
 </html>
 EOF);
 });
+
+it('catches boundaries on the same line', function () {
+    $messageString = <<<EOF
+From: sender@example.com
+To: recipient@example.com
+Subject: This is an email with common headers
+Date: Thu, 24 Aug 2023 21:15:01 PST
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="b552as-tfy"
+
+--b552as-tfy
+Content-Type: text/html; charset="utf-8"
+
+<html>
+<head>
+<title>This is an HTML email</title>
+</head>
+<body>
+<h1>This is the HTML version of the email</h1>
+</body>
+</html>--b552as-tfy
+Content-Type: text/plain; name=test.txt
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; name=test.txt;
+ filename="test.txt"; name="test.txt"
+
+VGhpcyBpcyBhIHRlc3Qgc3RyaW5n--b552as-tfy--
+EOF;
+
+    $message = Message::fromString($messageString);
+
+    expect($message->getParts())->toHaveCount(2)
+        ->and($message->getParts()[0]->getContent())->toBe(<<<EOF
+<html>
+<head>
+<title>This is an HTML email</title>
+</head>
+<body>
+<h1>This is the HTML version of the email</h1>
+</body>
+</html>
+EOF)
+        ->and($message->getPArts()[1]->getContent())->toBe('This is a test string');
+});
