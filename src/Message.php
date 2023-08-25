@@ -117,6 +117,11 @@ class Message implements \JsonSerializable
         return array_filter($this->parts, fn ($part) => $part->isAttachment());
     }
 
+    public function getSize(): int
+    {
+        return strlen($this->message);
+    }
+
     public function toArray(): array
     {
         return [
@@ -148,7 +153,7 @@ class Message implements \JsonSerializable
         $currentBodyHeaderInProgress = null;
 
         foreach ($lines as $line) {
-            $line = rtrim($line, "\r\n");
+            $line = rtrim($line, "\r\n ");
 
             if ($headerInProgress) {
                 $this->headers[$headerInProgress] .= "\n" . $line;
@@ -192,7 +197,7 @@ class Message implements \JsonSerializable
             }
 
             if ($collectingBody) {
-                $currentBody .= rtrim($line)."\n";
+                $currentBody .= $line."\n";
                 continue;
             }
 
@@ -212,6 +217,9 @@ class Message implements \JsonSerializable
 
                 continue;
             }
+
+            // The line is not part of the email message. Let's remove it altogether.
+            $this->message = ltrim(substr($this->message, strlen($line)));
         }
     }
 

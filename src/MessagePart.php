@@ -71,12 +71,18 @@ class MessagePart implements \JsonSerializable
         return '';
     }
 
+    public function getSize(): int
+    {
+        return strlen($this->getContent());
+    }
+
     public function toArray(): array
     {
         return [
             'headers' => $this->getHeaders(),
             'content' => $this->getContent(),
             'filename' => $this->getFilename(),
+            'size' => $this->getSize(),
         ];
     }
 

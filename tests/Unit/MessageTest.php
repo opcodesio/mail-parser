@@ -152,3 +152,44 @@ EOF;
     $attachments = $message->getAttachments();
     expect($attachments)->toHaveCount(1);
 });
+
+it('skips initial content that is not part of the message', function () {
+    $messageString = <<<EOF
+This is some initial content that is not part of the message.
+
+From: sender@example.com
+To: recipient@example.com
+Subject: This is an email with common headers
+Date: Thu, 24 Aug 2023 21:15:01 PST
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="----=_Part_1_1234567890"
+
+------=_Part_1_1234567890
+Content-Type: text/html; charset="utf-8"
+
+<html>
+<head>
+<title>This is an HTML email</title>
+</head>
+<body>
+<h1>This is the HTML version of the email</h1>
+</body>
+</html>
+
+------=_Part_1_1234567890-- 
+EOF;
+
+    $message = Message::fromString($messageString);
+
+    expect($message->getFrom())->toBe('sender@example.com')
+        ->and($message->getHtmlPart()?->getContent())->toBe(<<<EOF
+<html>
+<head>
+<title>This is an HTML email</title>
+</head>
+<body>
+<h1>This is the HTML version of the email</h1>
+</body>
+</html>
+EOF);
+});
