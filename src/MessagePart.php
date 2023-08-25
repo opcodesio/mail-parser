@@ -2,7 +2,7 @@
 
 namespace Opcodes\MailParser;
 
-class MessagePart
+class MessagePart implements \JsonSerializable
 {
     protected string $content;
 
@@ -78,5 +78,10 @@ class MessagePart
             'content' => $this->getContent(),
             'filename' => $this->getFilename(),
         ];
+    }
+
+    public function jsonSerialize(): mixed
+    {
+        return $this->toArray();
     }
 }

@@ -117,6 +117,25 @@ class Message implements \JsonSerializable
         return array_filter($this->parts, fn ($part) => $part->isAttachment());
     }
 
+    public function toArray(): array
+    {
+        return [
+            'id' => $this->getId(),
+            'subject' => $this->getSubject(),
+            'from' => $this->getFrom(),
+            'to' => $this->getTo(),
+            'reply_to' => $this->getReplyTo(),
+            'date' => $this->getDate() ? $this->getDate()->format('c') : null,
+            'headers' => $this->getHeaders(),
+            'parts' => array_map(fn ($part) => $part->toArray(), $this->getParts()),
+        ];
+    }
+
+    public function jsonSerialize(): mixed
+    {
+        return $this->toArray();
+    }
+
     protected function parse()
     {
         // Parse the email message into headers and body
@@ -129,22 +148,24 @@ class Message implements \JsonSerializable
         $currentBodyHeaderInProgress = null;
 
         foreach ($lines as $line) {
+            $line = rtrim($line, "\r\n");
+
             if ($headerInProgress) {
-                $this->headers[$headerInProgress] .= "\n" . rtrim($line);
-                $headerInProgress = str_ends_with($line, ';');
+                $this->headers[$headerInProgress] .= "\n" . $line;
+                $headerInProgress = str_ends_with($this->headers[$headerInProgress], ';');
                 continue;
             }
 
             if ($currentBodyHeaderInProgress) {
-                $currentBodyHeaders[$currentBodyHeaderInProgress] .= "\n" . rtrim($line);
-                $currentBodyHeaderInProgress = str_ends_with($line, ';');
+                $currentBodyHeaders[$currentBodyHeaderInProgress] .= "\n" . $line;
+                $currentBodyHeaderInProgress = str_ends_with($currentBodyHeaders[$currentBodyHeaderInProgress], ';');
                 continue;
             }
 
             if (isset($this->boundary) && $line === '--'.$this->boundary.'--') {
                 // We've reached the end of the message
                 $this->addPart($currentBody, $currentBodyHeaders);
-                continue;
+                break;
             }
 
             if (isset($this->boundary) && $line === '--'.$this->boundary) {
@@ -160,7 +181,7 @@ class Message implements \JsonSerializable
             }
 
             if ($collectingBody && preg_match('/^(?<key>[A-Za-z\-0-9]+): (?<value>.*)$/', $line, $matches)) {
-                $currentBodyHeaders[$matches['key']] = rtrim($matches['value']);
+                $currentBodyHeaders[$matches['key']] = $matches['value'];
 
                 // if the last character is a semicolon, then the header is continued on the next line
                 if (str_ends_with($currentBodyHeaders[$matches['key']], ';')) {
@@ -182,11 +203,11 @@ class Message implements \JsonSerializable
             }
 
             if (preg_match('/^(?<key>[A-Za-z\-0-9]+): (?<value>.*)$/', $line, $matches)) {
-                $this->headers[$matches['key']] = rtrim($matches['value']);
+                $this->headers[$matches['key']] = $matches['value'];
 
                 // if the last character is a semicolon, then the header is continued on the next line
                 if (str_ends_with($this->headers[$matches['key']], ';')) {
-                    $headerInProgress = rtrim($matches['key']);
+                    $headerInProgress = $matches['key'];
                 }
 
                 continue;
@@ -197,24 +218,5 @@ class Message implements \JsonSerializable
     protected function addPart(string $currentBody, array $currentBodyHeaders): void
     {
         $this->parts[] = new MessagePart(trim($currentBody), $currentBodyHeaders);
-    }
-
-    public function toArray(): array
-    {
-        return [
-            'id' => $this->getId(),
-            'subject' => $this->getSubject(),
-            'from' => $this->getFrom(),
-            'to' => $this->getTo(),
-            'reply_to' => $this->getReplyTo(),
-            'date' => $this->getDate() ? $this->getDate()->format('c') : null,
-            'headers' => $this->getHeaders(),
-            'parts' => array_map(fn ($part) => $part->toArray(), $this->getParts()),
-        ];
-    }
-
-    public function jsonSerialize(): mixed
-    {
-        return $this->toArray();
     }
 }
