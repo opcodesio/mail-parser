@@ -159,6 +159,36 @@ it('can parse a complex mail message', function () {
         ]);
 });
 
+it('can parse a multi-format mail message', function () {
+    $message = Message::fromFile(__DIR__ . '/../Fixtures/multiformat_email.eml');
+
+    expect($message->getFrom())->toBe('Arunas Practice <no-reply@example.com>')
+        ->and($message->getTo())->toBe('Arunas arukomp <arukomp@example.com>')
+        ->and($message->getReplyTo())->toBe('Arunas Practice <arunas@example.com>')
+        ->and($message->getSubject())->toBe('Appointment confirmation')
+        ->and($message->getId())->toBe('fddff4779513441c3f0c1811193f5b12@example.com')
+        ->and($message->getDate()->format('Y-m-d H:i:s'))->toBe('2023-08-24 14:51:14')
+        ->and($message->getBoundary())->toBe('s1NCDW_3');
+
+    $parts = $message->getParts();
+
+    expect($parts)->toHaveCount(2)
+        ->and($parts[0]->getContentType())->toBe('text/plain; charset=utf-8')
+        ->and($parts[0]->getHeaders())->toBe([
+            'Content-Type' => 'text/plain; charset=utf-8',
+            'Content-Transfer-Encoding' => 'quoted-printable',
+        ])
+        ->and($parts[1]->getContentType())->toBe('text/html; charset=utf-8')
+        ->and($parts[1]->getHeaders())->toBe([
+            'Content-Type' => 'text/html; charset=utf-8',
+            'Content-Transfer-Encoding' => 'quoted-printable',
+        ])->and($message->getTextPart()?->getContent())->toBe(<<<EOF
+Hi Arunas Skirius,
+This is a confirmation of your appointment.
+EOF);
+
+});
+
 it('can get contents of an encoded part', function () {
     $messageString = <<<EOF
 From: sender@example.com

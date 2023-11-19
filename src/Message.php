@@ -154,9 +154,11 @@ class Message implements \JsonSerializable
         return $this->toArray();
     }
 
-    protected function parse()
+    /**
+     * Parse the email message into headers and body parts.
+     */
+    protected function parse(): void
     {
-        // Parse the email message into headers and body
         $lines = explode("\n", $this->message);
         $headerInProgress = null;
 
@@ -217,8 +219,8 @@ class Message implements \JsonSerializable
                 continue;
             }
 
-            if (preg_match('/^Content-Type: multipart\/mixed; boundary=(?<boundary>.*)$/', $line, $matches)) {
-                $this->headers['Content-Type'] = 'multipart/mixed; boundary='.$matches['boundary'];
+            if (preg_match("/^Content-Type: (?<contenttype>multipart\/.*); boundary=(?<boundary>.*)$/", $line, $matches)) {
+                $this->headers['Content-Type'] = $matches['contenttype']."; boundary=".$matches['boundary'];
                 $this->boundary = trim($matches['boundary'], '"');
                 continue;
             }

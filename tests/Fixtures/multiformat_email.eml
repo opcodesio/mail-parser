@@ -1,0 +1,27 @@
+From: Arunas Practice <no-reply@example.com>
+To: Arunas arukomp <arukomp@example.com>
+Reply-To: Arunas Practice <arunas@example.com>
+Subject: Appointment confirmation
+Message-ID: <fddff4779513441c3f0c1811193f5b12@example.com>
+MIME-Version: 1.0
+Date: Thu, 24 Aug 2023 14:51:14 +0100
+Content-Type: multipart/alternative; boundary=s1NCDW_3
+
+--s1NCDW_3
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+Hi Arunas Skirius,
+This is a confirmation of your appointment.
+--s1NCDW_3
+Content-Type: text/html; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>Title</title>
+    </head>
+</html>
+--s1NCDW_3--
