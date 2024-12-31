@@ -154,9 +154,30 @@ it('can parse a complex mail message', function () {
         ->and($parts[1]->getHeaders())->toBe([
             'Content-Type' => 'text/calendar; name=Appointment.ics',
             'Content-Transfer-Encoding' => 'base64',
-            'Content-Disposition' => 'attachment; name=Appointment.ics;
- filename=Appointment.ics',
+            'Content-Disposition' => 'attachment; name=Appointment.ics; filename=Appointment.ics',
         ]);
+});
+
+it('can parse a complex mail message 2', function () {
+    $message = Message::fromFile(__DIR__ . '/../Fixtures/complex_email_2.eml');
+
+    expect($message->getFrom())->toBe('"Test  Center" <test@test34345345435.com>')
+        ->and($message->getTo())->toBe('receiver@example.com')
+        ->and($message->getReplyTo())->toBe('test@test34345345435.com')
+        ->and($message->getSubject())->toBe('Test subject')
+        ->and($message->getId())->toBe('01.A1.00000.ABC000000@gt.mta3vrest.cc.prd.sparkpost')
+        ->and($message->getDate()->format('Y-m-d H:i:s'))->toBe('2024-11-12 15:01:15')
+        ->and($message->getHeader('Delivered-To'))->toBe('receiver@example.com')
+        ->and($message->getBoundary())->toBeNull();
+
+    $parts = $message->getParts();
+
+    expect($parts)->toHaveCount(1);
+    $part = $parts[0];
+
+    expect($part->isHtml())->toBeTrue()
+        ->and($part->getContent())->toStartWith('<!DOCTYPE HTML PUBLIC')
+        ->and($part->getContent())->toEndWith('</html>');
 });
 
 it('can parse a multi-format mail message', function () {
@@ -324,7 +345,7 @@ EOF;
 </body>
 </html>
 EOF)
-        ->and($message->getPArts()[1]->getContent())->toBe('This is a test string');
+        ->and($message->getParts()[1]->getContent())->toBe('This is a test string');
 });
 
 it('still parses with a broken boundary', function () {

@@ -4,38 +4,48 @@ namespace Opcodes\MailParser;
 
 class MessagePart implements \JsonSerializable
 {
+    use HasHeaders;
+
+    protected string $rawMessage;
+
     protected string $content;
 
-    protected array $headers;
-
-    public function __construct(string $content, array $headers = [])
+    public function __construct(string $message)
     {
-        $this->content = $content;
-        $this->headers = $headers;
+        $this->rawMessage = $message;
+
+        $this->parse();
+    }
+
+    protected function parse(): void
+    {
+        // Split part into headers and content
+        if (strpos($this->rawMessage, "\r\n\r\n") !== false) {
+            [$headers, $content] = explode("\r\n\r\n", $this->rawMessage, 2);
+
+            // Parse part headers
+            $this->headers = Utils::parseHeaders($headers);
+            $this->headers = Utils::decodeHeaders($this->headers);
+
+            $this->content = trim($content);
+        } else {
+            // No headers, just content
+            $this->content = trim($this->rawMessage);
+        }
     }
 
     public function getContentType(): string
     {
-        return $this->headers['Content-Type'] ?? '';
-    }
-
-    public function getHeaders(): array
-    {
-        return $this->headers;
-    }
-
-    public function getHeader(string $name, $default = null): mixed
-    {
-        return $this->headers[$name] ?? $default;
+        return $this->getHeader('Content-Type', '');
     }
 
     public function getContent(): string
     {
         if (strtolower($this->getHeader('Content-Transfer-Encoding', '')) === 'base64') {
-            return base64_decode($this->content);
+            return Utils::normaliseLineEndings(base64_decode($this->content));
         }
 
-        return $this->content;
+        return Utils::normaliseLineEndings($this->content);
     }
 
     public function isHtml(): bool
@@ -73,7 +83,7 @@ class MessagePart implements \JsonSerializable
 
     public function getSize(): int
     {
-        return strlen($this->getContent());
+        return strlen($this->rawMessage);
     }
 
     public function toArray(): array
