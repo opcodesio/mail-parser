@@ -1,0 +1,80 @@
+Delivered-To: receiver@example.com
+Received: by 2002:a05:6a20:6a27:b0:1ce:d986:86ca with SMTP id asdf;
+        Tue, 12 Nov 2024 07:01:18 -0800 (PST)
+X-Google-Smtp-Source: asdfasdfasdfasdfasdfasdfasdfasdf
+X-Received: by 2002:a05:6512:4025:b0:533:3fc8:43ee with SMTP id asdf-asdf.13.1731423677759;
+        Tue, 12 Nov 2024 07:01:17 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1731423677; cv=none;
+        d=google.com; s=arc-20240605;
+        b=asdf/asdf/asdf
+         asdf/asdf
+         asdf
+         asdf/asdf+asdf
+         asdf+asdf/sadf/OP5
+         8b+g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=list-id:list-unsubscribe-post:list-unsubscribe:from:subject
+         :reply-to:mime-version:date:message-id:to:content-transfer-encoding
+         :dkim-signature;
+        bh=asdf=;
+        fh=asdf=;
+        b=asdf/f/asdf/asdf/oECL+asdf
+         asdf+nfQu/asdf/+asdf
+         asdf/asdf
+         asdf+1ig+asdf
+         asdf/asdf
+         XGyw==;
+        dara=google.com
+ARC-Authentication-Results: i=1; mx.google.com;
+       dkim=pass header.i=@test34345345435.com header.s=scph0924 header.b="ChJ/3uaY";
+       spf=pass (google.com: domain of msprvs1=asdf=bounces-12345@sparkpost.bounce.edrone.me designates 123.123.123.123 as permitted sender) smtp.mailfrom="asdf=asdf=bounces-12345@sparkpost.bounce.edrone.me";
+       dmarc=pass (p=QUARANTINE sp=NONE dis=NONE) header.from=test34345345435.com
+Return-Path: <msprvs1=asdf=bounces-12345@sparkpost.bounce.edrone.me>
+Received: from mta-12-228-142.sparkpostmail.com (mta-12-228-142.sparkpostmail.com. [123.123.123.123])
+        by mx.google.com with ESMTPS id asdf-asdf.299.2024.11.12.07.01.17
+        for <receiver@example.com>
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 12 Nov 2024 07:01:17 -0800 (PST)
+Received-SPF: pass (google.com: domain of msprvs1=asdf=bounces-12345@sparkpost.bounce.edrone.me designates 123.123.123.123 as permitted sender) client-ip=123.123.123.123;
+Authentication-Results: mx.google.com;
+       dkim=pass header.i=@test34345345435.com header.s=scph0924 header.b="ChJ/3uaY";
+       spf=pass (google.com: domain of msprvs1=asdf=bounces-12345@sparkpost.bounce.edrone.me designates 123.123.123.123 as permitted sender) smtp.mailfrom="msprvs1=asdf=bounces-12345@sparkpost.bounce.edrone.me";
+       dmarc=pass (p=QUARANTINE sp=NONE dis=NONE) header.from=test34345345435.com
+X-MSFBL: asdf+asdf=|asdf
+	asdf
+	asdf
+	asdf
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=test34345345435.com;
+	s=scph0924; t=1731423675; i=@test34345345435.com;
+	bh=asdf=;
+	h=Content-Type:To:Message-ID:Date:Subject:From:List-Unsubscribe:
+	 List-Unsubscribe-Post:From:To:Cc:Subject;
+	b=ChJ/asdf+asdf
+	 3Y+asdf/asdf
+	 asdf/asdf/asdf/asdf=
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/html; charset="UTF-8"
+To: receiver@example.com
+Message-ID: <01.A1.00000.ABC000000@gt.mta3vrest.cc.prd.sparkpost>
+Date: Tue, 12 Nov 2024 15:01:15 +0000
+MIME-Version: 1.0
+Reply-To: test@test34345345435.com
+Subject: =?utf-8?B?VGVzdCBzdWJqZWN0?=
+From: "Test  Center" <test@test34345345435.com>
+List-Unsubscribe: <mailto:unsubscribe@eu.sparkpostmail.com?subject=unsubscribe:asdf-asdf~>,<https://unsubscribe.eu.spmta.com/u/asdf~~/asdf~/asdf>
+List-Unsubscribe-Post: List-Unsubscribe=One-Click
+List-Id: <spceu.12345.0.sparkpostmail.com>
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www=
+.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">=0A<html xmlns=3D"http://ww=
+w.w3.org/1999/xhtml" xmlns:v=3D"urn:schemas-microsoft-com:vml" xmlns:o=3D"u=
+rn:schemas-microsoft-com:office:office">=0A<head>=0A<!--[if gte mso 9]>=0A<=
+xml>=0A  <o:OfficeDocumentSettings>=0A    <o:AllowPNG/>=0A    <o:PixelsPerI=
+nch>96</o:PixelsPerInch>=0A  </o:OfficeDocumentSettings>=0A</xml>=0A<![endi=
+f]-->=0A  <meta http-equiv=3D"Content-Type" content=3D"text/html; charset=
+=3DUTF-8">=0A  <meta name=3D"viewport" content=3D"width=3Ddevice-width, ini=
+tial-scale=3D1.0">=0A  <meta name=3D"x-apple-disable-message-reformatting">=
+=0A  <!--[if !mso]><!--><meta http-equiv=3D"X-UA-Compatible" content=3D"IE=
+=3Dedge"><!--<![endif]-->=0A  <title></title></head><body class=3D"clean-body u_bod=
+y" style=3D"margin: 0;padding: 0;-webkit-text-size-adjust: 100%;background-=
+color: #f8f8f8;color: #000000"></body></html>
