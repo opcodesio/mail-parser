@@ -152,7 +152,7 @@ class Message implements \JsonSerializable
             $this->boundary = $matches[1];
         }
 
-        if (!isset($this->boundary) && str_contains($contentType, 'multipart/')) {
+        if (!isset($this->boundary) && str_contains($contentType ?? '', 'multipart/')) {
             // multipart email, perhaps the boundary is corrupted in the header.
             // Let's attempt to find a boundary in the body.
             if (preg_match("~^--(?<boundary>[0-9A-Za-z'()+_,-./:=?]{0,68}[0-9A-Za-z'()+_,-./=?])~", $body, $matches)) {
