@@ -182,6 +182,30 @@ class Message implements \JsonSerializable
 
             $this->addPart($rawPart);
         }
+
+        // Flatten any nested multipart parts into their leaf sub-parts
+        $this->parts = $this->flattenParts($this->parts);
+    }
+
+    /**
+     * Recursively replace multipart parts with their leaf sub-parts.
+     *
+     * @param MessagePart[] $parts
+     * @return MessagePart[]
+     */
+    protected function flattenParts(array $parts): array
+    {
+        $result = [];
+
+        foreach ($parts as $part) {
+            if ($part->isMultipart()) {
+                $result = array_merge($result, $part->getSubParts());
+            } else {
+                $result[] = $part;
+            }
+        }
+
+        return $result;
     }
 
     protected function addPart(string $rawMessage): MessagePart

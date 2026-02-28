@@ -1,0 +1,60 @@
+From: Acme Corp <sender@acme.test>
+To: Jane Doe <jane@example.test>
+Reply-To: Jane Doe <jane@example.test>
+Subject: Order Confirmation for Jane Doe
+MIME-Version: 1.0
+Date: Tue, 15 Apr 2025 10:30:00 +0000
+Message-ID: <a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6@acme.test>
+Content-Type: multipart/mixed; boundary=Xq3mB9fZ
+
+--Xq3mB9fZ
+Content-Type: multipart/alternative; boundary=Kp7jR2wL
+
+--Kp7jR2wL
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+Your order has been confirmed.
+
+Thank you for shopping with Acme Corp!
+
+--Kp7jR2wL
+Content-Type: text/html; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+<html>
+<body>
+<h1>Your order has been confirmed.</h1>
+<p>Thank you for shopping with Acme Corp!</p>
+</body>
+</html>
+--Kp7jR2wL--
+
+--Xq3mB9fZ
+Content-Type: application/pdf;
+ name="receipt.pdf"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment;
+ name="receipt.pdf";
+ filename="receipt.pdf"
+
+dGVzdCBwZGYgY29udGVudCAxMjM=
+--Xq3mB9fZ
+Content-Type: application/pdf;
+ name="invoice.pdf"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment;
+ name="invoice.pdf";
+ filename="invoice.pdf"
+
+dGVzdCBwZGYgY29udGVudCA0NTY=
+--Xq3mB9fZ
+Content-Type: application/pdf;
+ name="terms.pdf"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment;
+ name="terms.pdf";
+ filename="terms.pdf"
+
+dGVzdCBwZGYgY29udGVudCA3ODk=
+--Xq3mB9fZ--
