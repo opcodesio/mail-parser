@@ -348,6 +348,47 @@ EOF)
         ->and($message->getParts()[1]->getContent())->toBe('This is a test string');
 });
 
+it('can parse a nested multipart email with alternatives and attachments', function () {
+    $message = Message::fromFile(__DIR__ . '/../Fixtures/multiformat_email_2.eml');
+
+    expect($message->getFrom())->toBe('Acme Corp <sender@acme.test>')
+        ->and($message->getTo())->toBe('Jane Doe <jane@example.test>')
+        ->and($message->getReplyTo())->toBe('Jane Doe <jane@example.test>')
+        ->and($message->getSubject())->toBe('Order Confirmation for Jane Doe')
+        ->and($message->getId())->toBe('a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6@acme.test')
+        ->and($message->getDate()->format('Y-m-d H:i:s'))->toBe('2025-04-15 10:30:00')
+        ->and($message->getBoundary())->toBe('Xq3mB9fZ');
+
+    // The nested multipart/alternative should be flattened into its leaf parts,
+    // so we expect: text/plain, text/html, and 3 PDF attachments = 5 parts
+    $parts = $message->getParts();
+    expect($parts)->toHaveCount(5);
+
+    // Text part from the nested multipart/alternative
+    $textPart = $message->getTextPart();
+    expect($textPart)->not->toBeNull()
+        ->and($textPart->getContentType())->toBe('text/plain; charset=utf-8')
+        ->and($textPart->getContent())->toContain('Your order has been confirmed.')
+        ->and($textPart->getContent())->toContain('Thank you for shopping with Acme Corp!');
+
+    // HTML part from the nested multipart/alternative
+    $htmlPart = $message->getHtmlPart();
+    expect($htmlPart)->not->toBeNull()
+        ->and($htmlPart->getContentType())->toBe('text/html; charset=utf-8')
+        ->and($htmlPart->getContent())->toContain('Your order has been confirmed.')
+        ->and($htmlPart->getContent())->toContain('</html>');
+
+    // 3 PDF attachments
+    $attachments = $message->getAttachments();
+    expect($attachments)->toHaveCount(3)
+        ->and($attachments[0]->getFilename())->toBe('receipt.pdf')
+        ->and($attachments[0]->isAttachment())->toBeTrue()
+        ->and($attachments[1]->getFilename())->toBe('invoice.pdf')
+        ->and($attachments[1]->isAttachment())->toBeTrue()
+        ->and($attachments[2]->getFilename())->toBe('terms.pdf')
+        ->and($attachments[2]->isAttachment())->toBeTrue();
+});
+
 it('still parses with a broken boundary', function () {
     $messageString = <<<EOF
 From: sender@example.com
