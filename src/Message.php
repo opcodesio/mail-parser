@@ -174,7 +174,7 @@ class Message implements \JsonSerializable
         }
 
         // Split body into parts using boundary
-        $parts = preg_split("/--" . preg_quote($this->boundary) . "(?:--|(?:\r\n|$))/", $body);
+        $parts = preg_split("/--" . preg_quote($this->boundary, '/') . "(?:--|(?:\r\n|$))/", $body);
 
         // Process each part
         foreach ($parts as $rawPart) {
