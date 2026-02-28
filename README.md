@@ -51,13 +51,13 @@ $message->getHeader('Content-Type');    // 'multipart/mixed; boundary="----=_Par
 $message->getFrom();                    // 'Arunas <arunas@example.com>
 $message->getTo();                      // 'John Doe <johndoe@example.com>
 $message->getSubject();                 // 'Subject line'
-$message->getDate();                    // DateTime object when the email was sent
+$message->getDate();                    // `Date:` header as DateTime object
 $message->getSize();                    // Email size in bytes
 
-$message->getParts();       // Returns an array of \Opcodes\MailParser\MessagePart, which can be html parts, text parts, attachments, etc.
-$message->getHtmlPart();    // Returns the \Opcodes\MailParser\MessagePart containing the HTML body
-$message->getTextPart();    // Returns the \Opcodes\MailParser\MessagePart containing the Text body
-$message->getAttachments(); // Returns an array of \Opcodes\MailParser\MessagePart that represent attachments
+$message->getParts();       // array of \Opcodes\MailParser\MessagePart, which can be html parts, text parts, attachments, etc.
+$message->getHtmlPart();    // \Opcodes\MailParser\MessagePart containing the HTML body
+$message->getTextPart();    // \Opcodes\MailParser\MessagePart containing the Text body
+$message->getAttachments(); // array of \Opcodes\MailParser\MessagePart that represent attachments
 
 $messagePart = $message->getParts()[0];
 
