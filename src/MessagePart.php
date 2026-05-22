@@ -99,11 +99,17 @@ class MessagePart implements \JsonSerializable
 
     public function getContent(): string
     {
+        $content = $this->content;
+
         if (strtolower($this->getHeader('Content-Transfer-Encoding', '')) === 'base64') {
-            return Utils::normaliseLineEndings(base64_decode($this->content));
+            $content = base64_decode($content);
         }
 
-        return Utils::normaliseLineEndings($this->content);
+        if ($this->isAttachment()) {
+            return $content;
+        }
+
+        return Utils::normaliseLineEndings($content);
     }
 
     public function isHtml(): bool
