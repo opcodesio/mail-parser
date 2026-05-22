@@ -129,16 +129,16 @@ class MessagePart implements \JsonSerializable
 
     public function isAttachment(): bool
     {
-        return str_starts_with($this->getHeader('Content-Disposition', ''), 'attachment');
+        return str_starts_with(strtolower($this->getHeader('Content-Disposition', '')), 'attachment');
     }
 
     public function getFilename(): string
     {
-        if (preg_match('/filename=([^;]+)/', $this->getHeader('Content-Disposition'), $matches)) {
+        if (preg_match('/filename=([^;]+)/i', $this->getHeader('Content-Disposition'), $matches)) {
             return trim($matches[1], '"');
         }
 
-        if (preg_match('/name=([^;]+)/', $this->getContentType(), $matches)) {
+        if (preg_match('/name=([^;]+)/i', $this->getContentType(), $matches)) {
             return trim($matches[1], '"');
         }
 
