@@ -425,3 +425,41 @@ EOF;
         ->and($message->getParts()[1]->isAttachment())->toBe(true)
         ->and($message->getParts()[1]->getContent())->toBeEmpty();
 });
+
+it('can parse mixed-case attachment headers', function () {
+    $messageString = <<<EOF
+CoNtEnT-tYpE: mUlTiPaRt/MiXeD; bOuNdArY=ABCdef; fIlEnAmE=ABCdef
+
+--ABCdef
+CoNtEnT-dIsPoSiTiOn: AtTaChMeNt
+
+TeSt
+EOF;
+
+    $message = Message::fromString($messageString);
+
+    expect($message->getParts())->toHaveCount(1)
+        ->and($message->getParts()[0]->isAttachment())->toBe(true)
+        ->and($message->getAttachments())->toHaveCount(1)
+        ->and($message->getAttachments()[0]->getFilename())->toBe('ABCdef')
+        ->and($message->getAttachments()[0]->getContent())->toBe('TeSt');
+});
+
+it('preserves binary attachment content', function () {
+    $messageString = <<<EOF
+CONTENT-TYPE: MULTIPART/MIXED; BOUNDARY=ABCdef; NAME=ABCdef
+
+--ABCdef
+CONTENT-DISPOSITION: ATTACHMENT
+CONTENT-TRANSFER-ENCODING: BASE64
+
+AAECDQoNDQoK/f7/
+EOF;
+
+    $message = Message::fromString($messageString);
+
+    expect($message->getAttachments())->toHaveCount(1)
+        ->and($message->getAttachments()[0]->getFilename())->toBe('ABCdef')
+        ->and($message->getAttachments()[0]->getContent())
+            ->toBe("\x0\x1\x2\r\n\r\r\n\n\xFD\xFE\xFF");
+});
